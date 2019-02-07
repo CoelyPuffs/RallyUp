@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RallyUp.Android", "RallyUp\RallyUp.Android\RallyUp.Android.csproj", "{04C694BB-F5B9-4700-A72B-A96CFB698616}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RallyUp", "RallyUp\RallyUp\RallyUp.csproj", "{8ED63E53-FBC3-4701-93C4-14150977403E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RallyUp", "RallyUp\RallyUp\RallyUp.csproj", "{8ED63E53-FBC3-4701-93C4-14150977403E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
