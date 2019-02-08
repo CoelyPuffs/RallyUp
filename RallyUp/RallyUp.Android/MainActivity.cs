@@ -23,22 +23,14 @@ namespace RallyUp.Droid
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            //TabLayoutResource = Resource.Layout.Tabbar;
-            //ToolbarResource = Resource.Layout.Toolbar;
+            TabLayoutResource = Resource.Layout.Tabbar;
+            ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
-            //global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            //LoadApplication(new App());
+            global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            LoadApplication(new App());
 
             AppCenter.Start("c29d077a-bb20-4b14-8349-5d7ad1dcf7cd", typeof(Analytics), typeof(Crashes));
-
-            SetContentView(Resource.Layout.MainActivityLayout);
-            Button SendButton = FindViewById<Button>(Resource.Id.SendButton);
-
-            SendButton.Click += delegate{
-                var smsMessenger = CrossMessaging.Current.SmsMessenger;
-                smsMessenger.SendSmsInBackground("5107011865", "Echo");
-            };
 
             RequestPermissions(new string[] { "android.permission.SEND_SMS",
                                               "android.permission.READ_PHONE_STATE",
