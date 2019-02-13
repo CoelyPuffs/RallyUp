@@ -8,5 +8,4 @@
 	<uses-permission android:name="android.permission.RECEIVE_SMS" />
   <uses-permission android:name="android.permission.BROADCAST_SMS"/>
 	<application android:label="RallyUp.Android"></application>
-  
 </manifest>

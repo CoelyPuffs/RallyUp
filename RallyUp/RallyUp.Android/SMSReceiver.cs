@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Android.Telephony;
 
 namespace RallyUp.Droid
 {
@@ -17,7 +18,11 @@ namespace RallyUp.Droid
     {
         public override void OnReceive(Context context, Intent intent)
         {
-            Toast.MakeText(context, "Received intent!", ToastLength.Short).Show();
+            var messages = Android.Provider.Telephony.Sms.Intents.GetMessagesFromIntent(intent);
+            foreach (var message in messages)
+            {
+                Toast.MakeText(context, message.MessageBody, ToastLength.Short).Show();
+            }
         }
     }
 }
