@@ -8,6 +8,7 @@ namespace RallyUp.Models
     {
         public string Name { get; set; }
         public string Number { get; set; }
+        public bool Selected { get; set; } = false;
 
         public Contact(string Name, string Number)
         {

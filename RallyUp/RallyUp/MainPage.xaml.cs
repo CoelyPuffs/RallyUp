@@ -9,41 +9,96 @@ using Xamarin.Forms;
 using Plugin.Messaging;
 using Plugin.ContactService;
 
-using RallyUp.ViewModel;
+using RallyUp.Models;
+using RallyUp;
 
 namespace RallyUp
 {
     public partial class MainPage : ContentPage
     {
+        StackLayout parentLayout = new StackLayout();
+
+        List<Contact> selectedContacts = new List<Contact>();
+
         public MainPage()
         {
             InitializeComponent();
-
-            //BindingContext = new ContactsViewModel();
-
-            DisplayContacts();
+            RenderUI();
+            // MessagingCenter.Subscribe<> 
         }
 
-        async void DisplayContacts()
+        async void RenderUI()
         {
             var contacts = await CrossContactService.Current.GetContactListAsync();
+            List<Contact> contactList = new List<Contact>();
 
-            BindingContext = new ContactsViewModel(contacts);
+            ScrollView scrollView = new ScrollView();
+            StackLayout fullStack = new StackLayout { Orientation = StackOrientation.Vertical };
+            
 
-            /*contactNames = new string[contacts.Count];
-
-            for (int i = 0; i < contacts.Count; i++)
+            foreach (Plugin.ContactService.Shared.Contact contact in contacts)
             {
-                contactNames[i] = contacts[i].Name;
+                Button buttonTemplate = new Button
+                {
+                    Text = contact.Name,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                };
+                buttonTemplate.Clicked += delegate
+                {
+                    if (buttonTemplate.BackgroundColor == Color.LightSeaGreen)
+                    {
+                        buttonTemplate.BackgroundColor = Color.LightGray;
+                        selectedContacts.Remove(selectedContacts.Find(x => x.Name == contact.Name && x.Number == contact.Number));
+                    }
+                    else
+                    {
+                        buttonTemplate.BackgroundColor = Color.LightSeaGreen;
+                        selectedContacts.Add(new Contact(contact.Name, contact.Number));
+                    }
+                };
+                fullStack.Children.Add(new StackLayout
+                {
+                    Orientation = StackOrientation.Horizontal,
+                    Children =
+                    {
+                        buttonTemplate
+                    }
+                });
+                //contactList.Add(new Contact(contact.Name, contact.Number));
             }
+            scrollView.Content = fullStack;
+            parentLayout.Children.Add(scrollView);
 
-            ContactsListView.ItemsSource = contactNames;
-            ContactsListView.BackgroundColor = Color.White;*/
+            Button selectContactsButton = new Button();
+            selectContactsButton.Text = "Select Contacts";
+            selectContactsButton.Clicked += delegate
+            {
+                string selectedContactsString = "";
+                foreach (Contact selected in selectedContacts)
+                {
+                    selectedContactsString += selected.Name + '\n';
+                }
+                DisplayAlert("Selected Contacts", selectedContactsString, "OK");
+            };
+            parentLayout.Children.Add(selectContactsButton);
+            
+            this.Content = parentLayout;
+            DisplayAlert("Done", "Done loading contacts", "OK");
         }
 
         private void OnSelectContactsButtonClicked(object sender, EventArgs e)
         {
-
+            selectedContacts = new List<Contact>();
+            string selectedContactsString = "";
+            /* foreach (Xamarin.Forms.MultiSelectListView.SelectableItem contact in contactList.Contacts)
+            {
+                if (contact.IsSelected)
+                {
+                    selectedContacts.Add((Contact)contact.Data);
+                    selectedContactsString += ((Contact)contact.Data).Name + '\n';
+                }
+            }*/
+            DisplayAlert("Selected Contacts", selectedContactsString, "OK");
         }
 
         void OnSendButtonClicked(object Sender, EventArgs args)

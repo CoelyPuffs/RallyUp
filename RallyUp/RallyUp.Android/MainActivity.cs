@@ -10,6 +10,8 @@ using Android.Widget;
 using Android.OS;
 using Android.Telephony;
 
+using Xamarin.Forms;
+
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -41,8 +43,21 @@ namespace RallyUp.Droid
 
             Toast.MakeText(ApplicationContext, "Permissions Granted", ToastLength.Short).Show();
 
-            SMSReceiver receiver = new SMSReceiver();
+            neoReceiver receiver = new neoReceiver();
             RegisterReceiver(receiver, new IntentFilter("android.provider.Telephony.SMS_RECEIVED"));
+        }
+    }
+
+    public class neoReceiver : BroadcastReceiver
+    {
+        public override void OnReceive(Context context, Intent intent)
+        {
+            var messages = Android.Provider.Telephony.Sms.Intents.GetMessagesFromIntent(intent);
+            foreach (var message in messages)
+            {
+                // MessagingCenter.Send<neoReceiver>(this, message.OriginatingAddress.Length.ToString() + message.OriginatingAddress.ToString() + message.MessageBody);
+                Toast.MakeText(context, message.MessageBody, ToastLength.Short).Show();
+            }
         }
     }
 }

@@ -11,6 +11,8 @@ using Android.Views;
 using Android.Widget;
 using Android.Telephony;
 
+using Xamarin.Forms;
+
 namespace RallyUp.Droid
 {
     [BroadcastReceiver (Enabled = true, Exported = true)]
@@ -21,6 +23,7 @@ namespace RallyUp.Droid
             var messages = Android.Provider.Telephony.Sms.Intents.GetMessagesFromIntent(intent);
             foreach (var message in messages)
             {
+                //MessagingCenter.Send<SMSReceiver>(this, message.MessageBody);
                 Toast.MakeText(context, message.MessageBody, ToastLength.Short).Show();
             }
         }

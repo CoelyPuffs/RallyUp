@@ -7,31 +7,6 @@
 
     <StackLayout xmlns:android="http://schemas.android.com/apk/res/android">
         <!-- Place new controls here -->
-        <ListView x:Name="ContactsListView"
-                  ItemsSource="{Binding Contacts}"
-                  lv:MultiSelect.Enable="True">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <lv:SelectableCell x:Name="SelectableCell">
-
-                        <lv:SelectableCell.CheckView>
-                            <Image Source="checkMark.png" WidthRequest="30" HeightRequest="30"></Image>
-                        </lv:SelectableCell.CheckView>
-
-                        <lv:SelectableCell.DataView>
-                            <StackLayout Orientation="Vertical" Padding="20,0,20,0">
-                                <Label Text="{Binding Name}" FontSize="17" TextColor="Black"></Label>
-                            </StackLayout>
-                        </lv:SelectableCell.DataView>
-
-                    </lv:SelectableCell>
-
-                </DataTemplate>
-            </ListView.ItemTemplate>
-            <ListView.Behaviors>
-                <lv:SelectedItemBehavior Command="OnContactSelected"/>
-            </ListView.Behaviors>
-        </ListView>
         
         <Button Text="Select contacts"
                 x:Name="SelectContactsButton"
