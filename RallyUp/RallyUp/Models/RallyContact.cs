@@ -4,13 +4,12 @@ using System.Text;
 
 namespace RallyUp.Models
 {
-    class Contact
+    class RallyContact
     {
         public string Name { get; set; }
         public string Number { get; set; }
-        public bool Selected { get; set; } = false;
 
-        public Contact(string Name, string Number)
+        public RallyContact(string Name, string Number)
         {
             this.Name = Name;
             this.Number = Number;

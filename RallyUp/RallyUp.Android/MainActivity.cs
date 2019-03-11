@@ -18,6 +18,8 @@ using Microsoft.AppCenter.Crashes;
 
 using Plugin.Messaging;
 
+using RallyUp.Droid;
+
 namespace RallyUp.Droid
 {
     [Activity(Label = "RallyUp", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
@@ -43,21 +45,22 @@ namespace RallyUp.Droid
 
             Toast.MakeText(ApplicationContext, "Permissions Granted", ToastLength.Short).Show();
 
-            neoReceiver receiver = new neoReceiver();
+            SMSReceiver receiver = new SMSReceiver();
             RegisterReceiver(receiver, new IntentFilter("android.provider.Telephony.SMS_RECEIVED"));
-        }
-    }
 
-    public class neoReceiver : BroadcastReceiver
-    {
-        public override void OnReceive(Context context, Intent intent)
-        {
-            var messages = Android.Provider.Telephony.Sms.Intents.GetMessagesFromIntent(intent);
-            foreach (var message in messages)
+            MessagingCenter.Subscribe<SMSReceiver, string>(this, "textReceived", (sender, arg) => 
             {
-                // MessagingCenter.Send<neoReceiver>(this, message.OriginatingAddress.Length.ToString() + message.OriginatingAddress.ToString() + message.MessageBody);
-                Toast.MakeText(context, message.MessageBody, ToastLength.Short).Show();
-            }
+                string[] splitmessage = arg.Split(':');
+                int addressLength = Convert.ToInt32(splitmessage[0]);
+                string backMessage = arg.Substring(splitmessage[0].Length + 1);
+                string address = backMessage.Substring(0, addressLength);
+                string message = backMessage.Substring(addressLength);
+
+                SemanticsDictionary dict = new SemanticsDictionary(message);
+                int semanticInt = dict.analyzeSemantics();
+
+                Toast.MakeText(this, address + " sent: " + message + " which has a semantics value of: " + semanticInt.ToString(), ToastLength.Long).Show();
+            });
         }
     }
 }

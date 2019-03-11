@@ -5,20 +5,10 @@
              xmlns:lv="clr-namespace:Xamarin.Forms.MultiSelectListView;assembly=Xamarin.Forms.MultiSelectListView"
              x:Class="RallyUp.MainPage">
 
-    <StackLayout xmlns:android="http://schemas.android.com/apk/res/android">
+    <StackLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                 BackgroundColor="#ffbd44">
         <!-- Place new controls here -->
-        
-        <Button Text="Select contacts"
-                x:Name="SelectContactsButton"
-                Clicked="OnSelectContactsButtonClicked"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"/>
-        
-        <Button Text="Press to send"
-                x:Name="SendButton"
-                Clicked="OnSendButtonClicked"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"/>
+        <Image Source="icon.png"/>
     </StackLayout>
 
 </ContentPage>

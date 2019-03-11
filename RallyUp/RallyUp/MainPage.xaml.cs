@@ -8,6 +8,7 @@ using Xamarin.Forms;
 
 using Plugin.Messaging;
 using Plugin.ContactService;
+using Plugin.ContactService.Shared;
 
 using RallyUp.Models;
 using RallyUp;
@@ -16,44 +17,69 @@ namespace RallyUp
 {
     public partial class MainPage : ContentPage
     {
-        StackLayout parentLayout = new StackLayout();
+        StackLayout parentLayout = new StackLayout { BackgroundColor = Color.FromHex("ffbd44") };
 
-        List<Contact> selectedContacts = new List<Contact>();
+        List<RallyContact> selectedContacts = new List<RallyContact>();
 
         public MainPage()
         {
             InitializeComponent();
-            RenderUI();
+            RenderSetupUI();
             // MessagingCenter.Subscribe<> 
         }
 
-        async void RenderUI()
+        async void RenderSetupUI()
         {
-            var contacts = await CrossContactService.Current.GetContactListAsync();
-            List<Contact> contactList = new List<Contact>();
+            IList<Contact> contacts = await CrossContactService.Current.GetContactListAsync();
+            IEnumerable<Contact> contactEnums = contacts.OrderBy(c => c.Name);
+            contacts = contactEnums.ToList();
 
-            ScrollView scrollView = new ScrollView();
-            StackLayout fullStack = new StackLayout { Orientation = StackOrientation.Vertical };
-            
+            ScrollView scrollView = new ScrollView { BackgroundColor = Color.Transparent };
+            StackLayout fullStack = new StackLayout
+            {
+                Orientation = StackOrientation.Vertical,
+                Margin = new Thickness(10)
+            };
 
-            foreach (Plugin.ContactService.Shared.Contact contact in contacts)
+            Label title = new Label
+            {
+                Text = "START A RALLY",
+                FontSize = 40,
+                FontAttributes = FontAttributes.Bold,
+                HorizontalOptions = LayoutOptions.Center
+            };
+            parentLayout.Children.Add(title);
+
+            GrowingEditor invitationBox = new GrowingEditor
+            {
+                BackgroundColor = Color.AntiqueWhite,
+                Placeholder = "Invitation goes here...",
+                PlaceholderColor = Color.Gray,
+                FontSize = 20,
+                TextColor = Color.Black,
+                Margin = new Thickness(10)
+            };
+            parentLayout.Children.Add(invitationBox);
+
+            foreach (Contact contact in contacts)
             {
                 Button buttonTemplate = new Button
                 {
                     Text = contact.Name,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
+                    BackgroundColor = Color.LightGray
                 };
                 buttonTemplate.Clicked += delegate
                 {
-                    if (buttonTemplate.BackgroundColor == Color.LightSeaGreen)
+                    if (buttonTemplate.BackgroundColor == Color.LightGreen)
                     {
                         buttonTemplate.BackgroundColor = Color.LightGray;
                         selectedContacts.Remove(selectedContacts.Find(x => x.Name == contact.Name && x.Number == contact.Number));
                     }
                     else
                     {
-                        buttonTemplate.BackgroundColor = Color.LightSeaGreen;
-                        selectedContacts.Add(new Contact(contact.Name, contact.Number));
+                        buttonTemplate.BackgroundColor = Color.LightGreen;
+                        selectedContacts.Add(new RallyContact(contact.Name, contact.Number));
                     }
                 };
                 fullStack.Children.Add(new StackLayout
@@ -64,50 +90,59 @@ namespace RallyUp
                         buttonTemplate
                     }
                 });
-                //contactList.Add(new Contact(contact.Name, contact.Number));
             }
             scrollView.Content = fullStack;
             parentLayout.Children.Add(scrollView);
 
-            Button selectContactsButton = new Button();
-            selectContactsButton.Text = "Select Contacts";
-            selectContactsButton.Clicked += delegate
+            Label errorLabel = new Label
             {
-                string selectedContactsString = "";
-                foreach (Contact selected in selectedContacts)
-                {
-                    selectedContactsString += selected.Name + '\n';
-                }
-                DisplayAlert("Selected Contacts", selectedContactsString, "OK");
+                IsVisible = false,
+                HorizontalOptions = LayoutOptions.Center
             };
-            parentLayout.Children.Add(selectContactsButton);
-            
-            this.Content = parentLayout;
-            DisplayAlert("Done", "Done loading contacts", "OK");
-        }
+            parentLayout.Children.Add(errorLabel);
 
-        private void OnSelectContactsButtonClicked(object sender, EventArgs e)
-        {
-            selectedContacts = new List<Contact>();
-            string selectedContactsString = "";
-            /* foreach (Xamarin.Forms.MultiSelectListView.SelectableItem contact in contactList.Contacts)
+            Button startRallyButton = new Button
             {
-                if (contact.IsSelected)
+                Text = "Rally Up!",
+                FontSize = 30,
+                HorizontalOptions = LayoutOptions.Center
+            };
+            startRallyButton.Clicked += delegate
+            {
+                if (invitationBox.Text == "")
                 {
-                    selectedContacts.Add((Contact)contact.Data);
-                    selectedContactsString += ((Contact)contact.Data).Name + '\n';
+                    errorLabel.IsVisible = true;
+                    errorLabel.Text = "Error: Invitation message missing";
                 }
-            }*/
-            DisplayAlert("Selected Contacts", selectedContactsString, "OK");
+                else if (selectedContacts.Count <= 0)
+                {
+                    errorLabel.IsVisible = true;
+                    errorLabel.Text = "Error: No contacts selected";
+                }
+                else
+                {
+                    var smsMessenger = CrossMessaging.Current.SmsMessenger;
+                    if (smsMessenger.CanSendSmsInBackground)
+                    {
+                        foreach (RallyContact selected in selectedContacts)
+                        {
+                            // For testing purposes only
+                            if (selected.Name == "Kerstan Thio")
+                            {
+                                smsMessenger.SendSmsInBackground(selected.Number.ToString(), invitationBox.Text);
+                            }
+                        }
+                    }
+                }
+            };
+            parentLayout.Children.Add(startRallyButton);
+
+            this.Content = parentLayout;
         }
 
-        void OnSendButtonClicked(object Sender, EventArgs args)
+        void RenderRallyUI()
         {
-            var smsMessenger = CrossMessaging.Current.SmsMessenger;
-            if (smsMessenger.CanSendSmsInBackground)
-            {
-                smsMessenger.SendSmsInBackground("5107011865", "Testing");
-            }
+            //Xamarin.Forms.MessagingCenter.Subscribe<RallyUp.Droid.SMSReceiver>
         }
     }
 }
