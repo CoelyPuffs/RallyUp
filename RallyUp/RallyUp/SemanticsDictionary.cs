@@ -92,7 +92,8 @@ namespace RallyUp
                 @"okey",
                 @"okie",
                 @"kk ",
-                @"k ",
+                @"\Ak ",
+                @" k ",
                 @"can+",
                 @"will",
                 @"good",
@@ -255,29 +256,30 @@ namespace RallyUp
             };
         }
 
-        public int analyzeSemantics()
+        public int analyzeSemantics(string message)
         {
             int semantic = 0;
 
-            string[] sentences = invitation.Split('.');
+            string[] sentences = message.Split('.');
 
-            string regexBase = @"\s*";
+            string regexBase = @"\s*(?i)";
             MatchCollection matchList;
 
             foreach (string sentence in sentences)
             {
                 int sentenceSemantic = 0;
-                int wordCount = invitation.Split(' ').Length;
+                int wordCount = message.Split(' ').Length;
 
                 for (int i = 0; i < positiveSemantics.Count; i++)
                 {
-                    matchList = Regex.Matches(invitation, regexBase + positiveSemantics[i]);
+                    string test = positiveSemantics[i];
+                    matchList = Regex.Matches(message, regexBase + positiveSemantics[i]);
                     sentenceSemantic += matchList.Count;
                 }
 
                 for (int i = 0; i < reversingSemantics.Count; i++)
                 {
-                    matchList = Regex.Matches(invitation, regexBase + reversingSemantics[i]);
+                    matchList = Regex.Matches(message, regexBase + reversingSemantics[i]);
                     if (matchList.Count > 0)
                     {
                         sentenceSemantic *= -1 * matchList.Count;
@@ -286,13 +288,13 @@ namespace RallyUp
 
                 for (int i = 0; i < negativeSemantics.Count; i++)
                 {
-                    matchList = Regex.Matches(invitation, regexBase + negativeSemantics[i]);
+                    matchList = Regex.Matches(message, regexBase + negativeSemantics[i]);
                     sentenceSemantic -= matchList.Count;
                 }
 
                 for (int i = 0; i < unsureSemantics.Count; i++)
                 {
-                    matchList = Regex.Matches(invitation, regexBase + unsureSemantics[i]);
+                    matchList = Regex.Matches(message, regexBase + unsureSemantics[i]);
                     if (matchList.Count > 0)
                     {
                         sentenceSemantic = 0;

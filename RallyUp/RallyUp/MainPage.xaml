@@ -2,13 +2,11 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:RallyUp"
-             xmlns:lv="clr-namespace:Xamarin.Forms.MultiSelectListView;assembly=Xamarin.Forms.MultiSelectListView"
              x:Class="RallyUp.MainPage">
 
     <StackLayout xmlns:android="http://schemas.android.com/apk/res/android"
                  BackgroundColor="#ffbd44">
-        <!-- Place new controls here -->
-        <Image Source="icon.png"/>
+        <!-- <Image Source="icon.png" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"/> -->
     </StackLayout>
 
 </ContentPage>
