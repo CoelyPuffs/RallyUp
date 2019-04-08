@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\checkMark.png" />
+    <EmbeddedResource Include="Resources\message.png" />
+    <EmbeddedResource Include="Resources\noMark.png" />
+    <EmbeddedResource Include="Resources\questionMark.png" />
     <EmbeddedResource Include="Resources\icon.png" />
   </ItemGroup>
 
@@ -31,6 +35,9 @@
 
   <ItemGroup>
     <EmbeddedResource Update="CurrentRally.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="MessageInviteesPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="RallySetupPage.xaml">

@@ -10,16 +10,36 @@ namespace RallyUp
 {
     public partial class MainPage : ContentPage
     {
+        RallySetupPage setupPage = new RallySetupPage();
+
         public MainPage()
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
-            RunEventSetup();
+
+            if (Application.Current.Properties.ContainsKey("CurrentRally"))
+            {
+                RunCurrentRally();
+            }
+            else
+            {
+                RunEventSetup();
+                MessagingCenter.Subscribe<RallySetupPage>(this, "RallyStarted", (sender) =>
+                {
+                    Navigation.RemovePage(setupPage);
+                });
+            }
         }
 
         async void RunEventSetup()
         {
-            await Navigation.PushAsync(new RallySetupPage());
+            await Navigation.PushAsync(setupPage);
+        }
+
+        async void RunCurrentRally()
+        {
+            Rally currentRally = (Rally)Application.Current.Properties["CurrentRally"];
+            await Navigation.PushAsync(new CurrentRally(currentRally));
         }
     }
 }
