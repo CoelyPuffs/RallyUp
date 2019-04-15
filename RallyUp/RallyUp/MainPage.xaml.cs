@@ -17,7 +17,7 @@ namespace RallyUp
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
 
-            if (Application.Current.Properties.ContainsKey("CurrentRally"))
+            /*if (Application.Current.Properties.ContainsKey("CurrentRally"))
             {
                 RunCurrentRally();
             }
@@ -28,7 +28,21 @@ namespace RallyUp
                 {
                     Navigation.RemovePage(setupPage);
                 });
-            }
+            }*/
+        }
+
+        void OnNewRallyButtonClicked(object thisSender, EventArgs arg)
+        {
+            RunEventSetup();
+            MessagingCenter.Subscribe<RallySetupPage>(this, "RallyStarted", (sender) =>
+            {
+                Navigation.RemovePage(setupPage);
+            });
+        }
+
+        void OnMyRalliesButtonClicked(object sender, EventArgs arg)
+        {
+            //RunCurrentRally();
         }
 
         async void RunEventSetup()

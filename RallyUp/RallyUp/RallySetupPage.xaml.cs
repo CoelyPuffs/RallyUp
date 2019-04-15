@@ -62,14 +62,42 @@ namespace RallyUp
             };
             parentLayout.Children.Add(invitationBox);
 
-            foreach (Contact contact in contacts)
+            StackLayout addByNumberStack = new StackLayout
             {
+                Orientation = StackOrientation.Horizontal,
+                BackgroundColor = Color.Transparent
+            };
+
+            GrowingEditor addByNumberEditor = new GrowingEditor
+            {
+                BackgroundColor = Color.AntiqueWhite,
+                Placeholder = "Number goes here...",
+                PlaceholderColor = Color.Gray,
+                TextColor = Color.Black,
+            };
+            addByNumberStack.Children.Add(addByNumberEditor);
+
+            Button addByNumberButton = new Button
+            {
+                BackgroundColor = Color.LightGray,
+                Text = "Add friend by number"
+            };
+            addByNumberStack.Children.Add(addByNumberButton);
+            addByNumberButton.Clicked += delegate
+            {
+                Contact contact = new Contact
+                {
+                    Name = addByNumberEditor.Text,
+                    Number = addByNumberEditor.Text
+                };
+
                 Button buttonTemplate = new Button
                 {
-                    Text = contact.Name,
+                    Text = addByNumberEditor.Text,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
-                    BackgroundColor = Color.LightGray
+                    BackgroundColor = Color.LightGreen,
                 };
+                selectedContacts.Add(new RallyContact(contact.Name, contact.Number));
                 buttonTemplate.Clicked += delegate
                 {
                     if (buttonTemplate.BackgroundColor == Color.LightGreen)
@@ -83,14 +111,37 @@ namespace RallyUp
                         selectedContacts.Add(new RallyContact(contact.Name, contact.Number));
                     }
                 };
-                fullStack.Children.Add(new StackLayout
+
+                fullStack.Children.Add(buttonTemplate);
+            };
+
+            parentLayout.Children.Add(addByNumberStack);
+
+            foreach (Contact contact in contacts.Where(x => x.Number != null))
+            {
+                if (contact.Number.Length >= 10)
                 {
-                    Orientation = StackOrientation.Horizontal,
-                    Children =
+                    Button buttonTemplate = new Button
                     {
-                        buttonTemplate
-                    }
-                });
+                        Text = contact.Name,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        BackgroundColor = Color.LightGray
+                    };
+                    buttonTemplate.Clicked += delegate
+                    {
+                        if (buttonTemplate.BackgroundColor == Color.LightGreen)
+                        {
+                            buttonTemplate.BackgroundColor = Color.LightGray;
+                            selectedContacts.Remove(selectedContacts.Find(x => x.Name == contact.Name && x.Number == contact.Number));
+                        }
+                        else
+                        {
+                            buttonTemplate.BackgroundColor = Color.LightGreen;
+                            selectedContacts.Add(new RallyContact(contact.Name, contact.Number));
+                        }
+                    };
+                    fullStack.Children.Add(buttonTemplate);
+                }
             }
             scrollView.Content = fullStack;
             parentLayout.Children.Add(scrollView);
