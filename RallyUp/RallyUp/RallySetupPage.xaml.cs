@@ -156,10 +156,19 @@ namespace RallyUp
                 invitees = selectedContacts
             };
 
-            MessagingCenter.Send<RallySetupPage>(this, "RallyStarted");
+            if (App.Current.Properties.ContainsKey("CurrentRally"))
+            {
+                App.Current.Properties["CurrentRally"] = newRally;
+            }
+            else
+            {
+                App.Current.Properties.Add("CurrentRally", newRally);
+            }
 
             var newRallyPage = new CurrentRally(newRally);
             await Navigation.PushAsync(newRallyPage);
+
+            MessagingCenter.Send<RallySetupPage>(this, "RallyStarted");
         }
     }
 }
