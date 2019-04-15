@@ -42,7 +42,7 @@ namespace RallyUp
             else
             {
                 TimeSpan timeDiff = End.Subtract(currentTime);
-                TimerString = timeDiff.Minutes.ToString("D2") + ":" + timeDiff.Seconds.ToString("D2");
+                TimerString = timeDiff.Minutes.ToString() + ":" + timeDiff.Seconds.ToString();
             }
             OnPropertyChanged("TimerString");
         }

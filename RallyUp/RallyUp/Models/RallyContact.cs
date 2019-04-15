@@ -23,7 +23,7 @@ namespace RallyUp.Models
             this.Name = Name;
             this.Number = Number;
             this.Status = 0;
-            this.StatusString = "―";
+            this.StatusString = "0";
         }
 
         public void modifyStatus(int newStatus)
@@ -31,21 +31,7 @@ namespace RallyUp.Models
             if (newStatus >= 0 && newStatus <= 3)
             {
                 this.Status = newStatus;
-                switch (newStatus)
-                {
-                    case 0:
-                        this.StatusString = "―";
-                        break;
-                    case 1:
-                        this.StatusString = "?";
-                        break;
-                    case 2:
-                        this.StatusString = "✗";
-                        break;
-                    case 3:
-                        this.StatusString = "✓";
-                        break;
-                }
+                this.StatusString = newStatus.ToString();
                 OnPropertyChanged("StatusString");
             }
         }

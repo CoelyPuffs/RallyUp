@@ -44,12 +44,6 @@ namespace RallyUp
 
         void RenderCurrentRallyUI(Rally currentRally)
         {
-            StackLayout upperLayout = new StackLayout
-            {
-                Orientation = StackOrientation.Horizontal,
-                HorizontalOptions = LayoutOptions.FillAndExpand
-            };
-
             Label timerLabel = new Label
             {
                 TextColor = Color.Black,
@@ -59,22 +53,7 @@ namespace RallyUp
             };
             timerLabel.BindingContext = timer;
             timerLabel.SetBinding(Label.TextProperty, "TimerString");
-            upperLayout.Children.Add(timerLabel);
-
-            Button messageInviteesButton = new Button
-            {
-                Text = "msg",
-                FontSize = 10,
-                TextColor = Color.Black,
-                HorizontalOptions = LayoutOptions.End
-            };
-            messageInviteesButton.Clicked += delegate
-            {
-                openNewMessagePage();
-            };
-            upperLayout.Children.Add(messageInviteesButton);
-
-            parentLayout.Children.Add(upperLayout);
+            parentLayout.Children.Add(timerLabel);
 
             Label invitation = new Label
             {
@@ -99,8 +78,8 @@ namespace RallyUp
                 Title = "Sort by",
                 TextColor = Color.Black,
                 FontSize = 20,
-                HorizontalOptions = LayoutOptions.Fill,
-                BackgroundColor = Color.Transparent
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                BackgroundColor = Color.Gray
             };
 
             sortPicker.Items.Add("Sort A-Z");
@@ -167,9 +146,7 @@ namespace RallyUp
                 Button semanticDisplayButton = new Button
                 {
                     HorizontalOptions = LayoutOptions.End,
-                    BackgroundColor = Color.Transparent,
-                    TextColor = Color.Black,
-                    FontSize = 20
+                    BackgroundColor = Color.Transparent
                 };
                 semanticDisplayButton.BindingContext = invitee;
                 semanticDisplayButton.SetBinding(Button.TextProperty, "StatusString");
@@ -179,7 +156,7 @@ namespace RallyUp
                     Source = "checkMark.png"
                 };*/
 
-                //statusButtons.Add(semanticDisplayButton);
+                statusButtons.Add(semanticDisplayButton);
 
                 inviteeStackTemplate.Children.Add(inviteeTemplate);
                 inviteeStackTemplate.Children.Add(semanticDisplayButton);
@@ -254,14 +231,17 @@ namespace RallyUp
                 Button semanticDisplayButton = new Button
                 {
                     HorizontalOptions = LayoutOptions.End,
-                    BackgroundColor = Color.Transparent,
-                    TextColor = Color.Black,
-                    FontSize = 20
+                    BackgroundColor = Color.Transparent
                 };
                 semanticDisplayButton.BindingContext = invitee;
                 semanticDisplayButton.SetBinding(Button.TextProperty, "StatusString");
 
-                //statusButtons.Add(semanticDisplayButton);
+                /*ImageButton statusTemplate = new ImageButton
+                {
+                    Source = "checkMark.png"
+                };*/
+
+                statusButtons.Add(semanticDisplayButton);
 
                 inviteeStackTemplate.Children.Add(inviteeTemplate);
                 inviteeStackTemplate.Children.Add(semanticDisplayButton);
@@ -269,18 +249,6 @@ namespace RallyUp
                 inviteeStack.Children.Add(inviteeStackTemplate);
             }
             inviteeScrollView.Content = inviteeStack;
-        }
-
-        async void openNewMessagePage()
-        {
-            var newMessagePage = new MessageInviteesPage(currentRally.invitees);
-            await Navigation.PushAsync(newMessagePage);
-        }
-
-        protected override bool OnBackButtonPressed()
-        {
-            base.OnBackButtonPressed();
-            return true;
         }
     }
 }
