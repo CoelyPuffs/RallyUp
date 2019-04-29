@@ -20,7 +20,8 @@
                 BackgroundColor="#ffa600"
                 Grid.Row="1"
                 HorizontalOptions="FillAndExpand"
-                VerticalOptions="FillAndExpand"/>
+                VerticalOptions="FillAndExpand"
+                Clicked="OnMyRalliesButtonClicked"/>
     </Grid>
 
 </ContentPage>

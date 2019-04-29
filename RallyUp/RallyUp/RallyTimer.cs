@@ -8,17 +8,17 @@ namespace RallyUp
 {
     public class RallyTimer : INotifyPropertyChanged
     {
-        DateTime Start;
+        //DateTime Start;
         DateTime End;
         Timer Timer;
         public string TimerString { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public RallyTimer(DateTime start)
+        public RallyTimer(DateTime end)
         {
-            this.Start = start;
-            this.End = start.AddMinutes(10);
+            //this.Start = start;
+            this.End = end;
             Timer = new Timer(1000);
             Timer.Elapsed += OnTimedEvent;
             Timer.AutoReset = true;

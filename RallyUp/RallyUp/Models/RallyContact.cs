@@ -21,7 +21,7 @@ namespace RallyUp.Models
         public RallyContact(string Name, string Number)
         {
             this.Name = Name;
-            this.Number = Number;
+            this.Number = simplifyNumber(Number);
             this.Status = 0;
             this.StatusString = "―";
         }
@@ -48,6 +48,41 @@ namespace RallyUp.Models
                 }
                 OnPropertyChanged("StatusString");
             }
+        }
+
+        string simplifyNumber(string originalNumber)
+        {
+            string newNumber = "";
+            foreach(char n in originalNumber)
+            {
+                if (System.Char.IsDigit(n))
+                {
+                    newNumber += n;
+                }
+            }
+            return newNumber;
+        }
+
+        public void incrementStatus()
+        {
+            this.Status++;
+            if (this.Status > 3)
+            {
+                this.Status = 1;
+            }
+            switch (this.Status)
+            {
+                case 1:
+                    this.StatusString = "?";
+                    break;
+                case 2:
+                    this.StatusString = "✗";
+                    break;
+                case 3:
+                    this.StatusString = "✓";
+                    break;
+            }
+            OnPropertyChanged("StatusString");
         }
 
         protected void OnPropertyChanged(string name)

@@ -4,31 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json;
+
 using Xamarin.Forms;
 
 namespace RallyUp
 {
     public partial class MainPage : ContentPage
     {
-        RallySetupPage setupPage = new RallySetupPage();
+        TextSender sender;
+        RallySetupPage setupPage;
 
         public MainPage()
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
 
-            /*if (Application.Current.Properties.ContainsKey("CurrentRally"))
+            if (!Application.Current.Properties.ContainsKey("RallyList"))
             {
-                RunCurrentRally();
+                List<Rally> rallyList = new List<Rally>();
+                Application.Current.Properties["RallyList"] = JsonConvert.SerializeObject(rallyList);
             }
-            else
-            {
-                RunEventSetup();
-                MessagingCenter.Subscribe<RallySetupPage>(this, "RallyStarted", (sender) =>
-                {
-                    Navigation.RemovePage(setupPage);
-                });
-            }*/
+            sender = new TextSender();
+            setupPage = new RallySetupPage(sender);
         }
 
         void OnNewRallyButtonClicked(object thisSender, EventArgs arg)
@@ -42,7 +40,7 @@ namespace RallyUp
 
         void OnMyRalliesButtonClicked(object sender, EventArgs arg)
         {
-            //RunCurrentRally();
+            RunMyRallies();
         }
 
         async void RunEventSetup()
@@ -50,10 +48,9 @@ namespace RallyUp
             await Navigation.PushAsync(setupPage);
         }
 
-        async void RunCurrentRally()
+        async void RunMyRallies()
         {
-            Rally currentRally = (Rally)Application.Current.Properties["CurrentRally"];
-            await Navigation.PushAsync(new CurrentRally(currentRally));
+            await Navigation.PushAsync(new MyRallies(sender));
         }
     }
 }

@@ -19,16 +19,19 @@ namespace RallyUp
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MessageInviteesPage : ContentPage
     {
+        TextSender sender;
+
         List<RallyContact> recipientList = new List<RallyContact>();
         List<RallyContact> rallyList;
         bool acceptedSelected = false;
         bool unsureSelected = false;
         bool declinedSelected = false;
 
-        public MessageInviteesPage(List<RallyContact> inviteeList)
+        public MessageInviteesPage(List<RallyContact> inviteeList, TextSender sender)
         {
             InitializeComponent();
             rallyList = inviteeList;
+            this.sender = sender;
         }
 
         void OnSelectAcceptedButtonClicked(object sender, EventArgs args)
@@ -90,20 +93,20 @@ namespace RallyUp
             }
             else
             {
-                var smsMessenger = CrossMessaging.Current.SmsMessenger;
-                if (smsMessenger.CanSendSmsInBackground)
-                {
+                //var smsMessenger = CrossMessaging.Current.SmsMessenger;
+                //if (smsMessenger.CanSendSmsInBackground)
+                //{
                     foreach (RallyContact selected in recipientList)
                     {
                         // For testing purposes only
-                        if (selected.Name == "Kerstan Thio")
-                        {
-                            smsMessenger.SendSmsInBackground(selected.Number.ToString(), messageEditor.Text);
-                        }
+                        //if (selected.Name == "Kerstan Thio")
+                        //{
+                            this.sender.sendText(selected.Number.ToString(), messageEditor.Text);
+                        //}
                     }
-                }
+                //}
 
-                DependencyService.Get<IMessage>().LongAlert("Message sent!");
+                //DependencyService.Get<IMessage>().LongAlert("Message sent!");
 
                 Navigation.RemovePage(this);
             }

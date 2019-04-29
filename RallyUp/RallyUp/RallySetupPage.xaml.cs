@@ -10,6 +10,8 @@ using Plugin.Messaging;
 using Plugin.ContactService;
 using Plugin.ContactService.Shared;
 
+using Newtonsoft.Json;
+
 using RallyUp.Models;
 using RallyUp;
 
@@ -17,15 +19,18 @@ namespace RallyUp
 {
     public partial class RallySetupPage : ContentPage
     {
+        TextSender sender;
+
         StackLayout parentLayout = new StackLayout { BackgroundColor = Color.FromHex("ffbd44") };
 
         List<RallyContact> selectedContacts = new List<RallyContact>();
 
-        public RallySetupPage()
+        public RallySetupPage(TextSender sender)
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
             RenderSetupUI();
+            this.sender = sender;
         }
 
         async void RenderSetupUI()
@@ -65,7 +70,8 @@ namespace RallyUp
             StackLayout addByNumberStack = new StackLayout
             {
                 Orientation = StackOrientation.Horizontal,
-                BackgroundColor = Color.Transparent
+                BackgroundColor = Color.Transparent,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
 
             GrowingEditor addByNumberEditor = new GrowingEditor
@@ -74,45 +80,49 @@ namespace RallyUp
                 Placeholder = "Number goes here...",
                 PlaceholderColor = Color.Gray,
                 TextColor = Color.Black,
+                Keyboard = Keyboard.Numeric
             };
             addByNumberStack.Children.Add(addByNumberEditor);
 
             Button addByNumberButton = new Button
             {
                 BackgroundColor = Color.LightGray,
-                Text = "Add friend by number"
+                Text = "Add by number"
             };
             addByNumberStack.Children.Add(addByNumberButton);
             addByNumberButton.Clicked += delegate
             {
-                Contact contact = new Contact
+                if (addByNumberEditor.Text != "")
                 {
-                    Name = addByNumberEditor.Text,
-                    Number = addByNumberEditor.Text
-                };
-
-                Button buttonTemplate = new Button
-                {
-                    Text = addByNumberEditor.Text,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    BackgroundColor = Color.LightGreen,
-                };
-                selectedContacts.Add(new RallyContact(contact.Name, contact.Number));
-                buttonTemplate.Clicked += delegate
-                {
-                    if (buttonTemplate.BackgroundColor == Color.LightGreen)
+                    Contact contact = new Contact
                     {
-                        buttonTemplate.BackgroundColor = Color.LightGray;
-                        selectedContacts.Remove(selectedContacts.Find(x => x.Name == contact.Name && x.Number == contact.Number));
-                    }
-                    else
-                    {
-                        buttonTemplate.BackgroundColor = Color.LightGreen;
-                        selectedContacts.Add(new RallyContact(contact.Name, contact.Number));
-                    }
-                };
+                        Name = addByNumberEditor.Text,
+                        Number = addByNumberEditor.Text
+                    };
 
-                fullStack.Children.Add(buttonTemplate);
+                    Button buttonTemplate = new Button
+                    {
+                        Text = addByNumberEditor.Text,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
+                        BackgroundColor = Color.LightGreen
+                    };
+                    selectedContacts.Add(new RallyContact(contact.Name, contact.Number));
+                    buttonTemplate.Clicked += delegate
+                    {
+                        if (buttonTemplate.BackgroundColor == Color.LightGreen)
+                        {
+                            buttonTemplate.BackgroundColor = Color.LightGray;
+                            selectedContacts.Remove(selectedContacts.Find(x => x.Name == contact.Name && x.Number == contact.Number));
+                        }
+                        else
+                        {
+                            buttonTemplate.BackgroundColor = Color.LightGreen;
+                            selectedContacts.Add(new RallyContact(contact.Name, contact.Number));
+                        }
+                    };
+
+                    fullStack.Children.Add(buttonTemplate);
+                }
             };
 
             parentLayout.Children.Add(addByNumberStack);
@@ -174,18 +184,26 @@ namespace RallyUp
                 }
                 else
                 {
-                    var smsMessenger = CrossMessaging.Current.SmsMessenger;
+                    foreach (RallyContact selected in selectedContacts)
+                    {
+                        // For testing purposes only
+                        //if (selected.Name == "Kerstan Thio")
+                        //{
+                        sender.sendText(selected.Number.ToString(), invitationBox.Text);
+                        //}
+                    }
+                    /*var smsMessenger = CrossMessaging.Current.SmsMessenger;
                     if (smsMessenger.CanSendSmsInBackground)
                     {
                         foreach (RallyContact selected in selectedContacts)
                         {
                             // For testing purposes only
-                            if (selected.Name == "Kerstan Thio")
-                            {
+                            //if (selected.Name == "Kerstan Thio")
+                            //{
                                 smsMessenger.SendSmsInBackground(selected.Number.ToString(), invitationBox.Text);
-                            }
+                            //}
                         }
-                    }
+                    }*/
 
                     InitializeRallyUI(invitationBox.Text);
                 }
@@ -206,17 +224,13 @@ namespace RallyUp
                 invitation = invitation,
                 invitees = selectedContacts
             };
+            newRally.refreshInviteeSummary();
 
-            if (App.Current.Properties.ContainsKey("CurrentRally"))
-            {
-                App.Current.Properties["CurrentRally"] = newRally;
-            }
-            else
-            {
-                App.Current.Properties.Add("CurrentRally", newRally);
-            }
+            List<Rally> rallyList = JsonConvert.DeserializeObject<List<Rally>>(Application.Current.Properties["RallyList"] as string);
+            rallyList.Add(newRally);
+            Application.Current.Properties["RallyList"] = JsonConvert.SerializeObject(rallyList);
 
-            var newRallyPage = new CurrentRally(newRally);
+            var newRallyPage = new CurrentRally(newRally, sender);
             await Navigation.PushAsync(newRallyPage);
 
             MessagingCenter.Send<RallySetupPage>(this, "RallyStarted");

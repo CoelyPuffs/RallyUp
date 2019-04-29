@@ -8,6 +8,8 @@ using System.Timers;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+using Newtonsoft.Json;
+
 using RallyUp.Models;
 
 namespace RallyUp
@@ -21,20 +23,23 @@ namespace RallyUp
         SemanticsDictionary rallyDictionary;
         RallyTimer timer;
         List<RallyContact> visibleInviteeList;
+        TextSender sender;
 
         ScrollView inviteeScrollView = new ScrollView { BackgroundColor = Color.Transparent };
         StackLayout inviteeStack = new StackLayout { Orientation = StackOrientation.Vertical };
         List<Button> statusButtons = new List<Button>();
 
-        public CurrentRally(Rally rallyData)
+        public CurrentRally(Rally rallyData, TextSender textSender)
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
 
             currentRally = rallyData;
-            timer = new RallyTimer(currentRally.start);
+            timer = new RallyTimer(currentRally.end);
+            this.sender = textSender;
 
             rallyDictionary = new SemanticsDictionary(currentRally.invitation);
+            currentRally.refreshInviteeSummary();
             RenderCurrentRallyUI(currentRally);
 
             MessagingCenter.Subscribe<App, string>(this, "textReceived", (sender, arg) => {
@@ -44,27 +49,32 @@ namespace RallyUp
 
         void RenderCurrentRallyUI(Rally currentRally)
         {
-            StackLayout upperLayout = new StackLayout
+            Grid upperLayout = new Grid
             {
-                Orientation = StackOrientation.Horizontal,
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                MinimumHeightRequest = 100
             };
+            upperLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            upperLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            upperLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
+            upperLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
             Label timerLabel = new Label
             {
                 TextColor = Color.Black,
                 FontSize = 40,
                 FontAttributes = FontAttributes.Bold,
-                HorizontalOptions = LayoutOptions.Center
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
             timerLabel.BindingContext = timer;
             timerLabel.SetBinding(Label.TextProperty, "TimerString");
-            upperLayout.Children.Add(timerLabel);
+            upperLayout.Children.Add(timerLabel, 1, 0);
 
             Button messageInviteesButton = new Button
             {
-                Text = "msg",
-                FontSize = 10,
+                Text = "\U00002709",
+                FontSize = 20,
+                FontAttributes = FontAttributes.Bold,
                 TextColor = Color.Black,
                 HorizontalOptions = LayoutOptions.End
             };
@@ -72,7 +82,7 @@ namespace RallyUp
             {
                 openNewMessagePage();
             };
-            upperLayout.Children.Add(messageInviteesButton);
+            upperLayout.Children.Add(messageInviteesButton, 2, 0);
 
             parentLayout.Children.Add(upperLayout);
 
@@ -86,13 +96,15 @@ namespace RallyUp
             };
             parentLayout.Children.Add(invitation);
 
-            /*Label summary = new Label
+            Label summary = new Label
             {
-                Text = "Yes: 0, No: 0, IDK: 0, N/A: 0",
                 TextColor = Color.Black,
-                FontSize = 20
+                FontSize = 20,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
-            parentLayout.Children.Add(summary);*/
+            summary.BindingContext = currentRally;
+            summary.SetBinding(Label.TextProperty, "inviteeSummary");
+            parentLayout.Children.Add(summary);
 
             Picker sortPicker = new Picker
             {
@@ -144,7 +156,9 @@ namespace RallyUp
 
             parentLayout.Children.Add(sortPicker);
 
-            inviteeScrollView = new ScrollView { BackgroundColor = Color.Transparent };
+            inviteeScrollView = new ScrollView {
+                BackgroundColor = Color.Transparent
+            };
             inviteeStack = new StackLayout { Orientation = StackOrientation.Vertical };
 
             foreach (RallyContact invitee in visibleInviteeList)
@@ -170,6 +184,11 @@ namespace RallyUp
                     BackgroundColor = Color.Transparent,
                     TextColor = Color.Black,
                     FontSize = 20
+                };
+                semanticDisplayButton.Clicked += delegate
+                {
+                    invitee.incrementStatus();
+                    currentRally.refreshInviteeSummary();
                 };
                 semanticDisplayButton.BindingContext = invitee;
                 semanticDisplayButton.SetBinding(Button.TextProperty, "StatusString");
@@ -225,6 +244,10 @@ namespace RallyUp
                 {
                     replier.modifyStatus(3);
                 }
+                currentRally.refreshInviteeSummary();
+                List<Rally> rallyList = JsonConvert.DeserializeObject<List<Rally>>(Application.Current.Properties["RallyList"] as string);
+                rallyList.Find(x => x.end == currentRally.end && x.invitation == currentRally.invitation).invitees = currentRally.invitees;
+                Application.Current.Properties["RallyList"] = JsonConvert.SerializeObject(rallyList);
             }
 
             //Toast.MakeText(this, address + " sent: " + message + " which has a semantics value of: " + semanticInt.ToString(), ToastLength.Long).Show();
@@ -258,6 +281,11 @@ namespace RallyUp
                     TextColor = Color.Black,
                     FontSize = 20
                 };
+                semanticDisplayButton.Clicked += delegate
+                {
+                    invitee.incrementStatus();
+                    currentRally.refreshInviteeSummary();
+                };
                 semanticDisplayButton.BindingContext = invitee;
                 semanticDisplayButton.SetBinding(Button.TextProperty, "StatusString");
 
@@ -273,7 +301,7 @@ namespace RallyUp
 
         async void openNewMessagePage()
         {
-            var newMessagePage = new MessageInviteesPage(currentRally.invitees);
+            var newMessagePage = new MessageInviteesPage(currentRally.invitees, this.sender);
             await Navigation.PushAsync(newMessagePage);
         }
 
