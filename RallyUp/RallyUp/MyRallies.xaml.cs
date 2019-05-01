@@ -42,6 +42,7 @@ namespace RallyUp
             Grid upperLayout = new Grid
             {
                 HorizontalOptions = LayoutOptions.FillAndExpand,
+                MinimumHeightRequest = 100
             };
             upperLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             upperLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });

@@ -76,7 +76,7 @@ namespace RallyUp
                 @"heading ", // unless it refers to a direction or the header of a document
                 @"plan ",
                 @"intend ",
-                
+
             };
 
             positiveSemantics = new List<string>
@@ -85,14 +85,20 @@ namespace RallyUp
                 @"yeah",
                 @"yea",
                 @"yah",
+                @"yaeh",
+                @"yeha",
+                @"yeh",
                 @"yep",
                 @"sure",
-                @"ok",
+                @" ok ",
+                @"\Aok ",
+                @"\Aok\z",
                 @"okay",
                 @"okey",
                 @"okie",
                 @"kk ",
                 @"\Ak ",
+                @"\Ak\z",
                 @" k ",
                 @"can+",
                 @"will",
@@ -119,6 +125,17 @@ namespace RallyUp
                 @"not busy",
                 @"i do",
                 @"love to",
+                @"im in",
+                @"i'm in",
+                @"yas+",
+                @"see you there",
+                @"c u there",
+                @"see u there",
+                @"i'll be there",
+                @"ill be there",
+                @"meet you there",
+                @"meet u there",
+                @"wait for me",
                 @"❤",
                 @"💋",
                 @"💓",
@@ -168,11 +185,15 @@ namespace RallyUp
                 @"another time",
                 @"but",
                 @"tired",
+                @"busy",
                 @"far",
                 @"bad",
                 @"sucks",
                 @"shame",
                 @"pity",
+                @"wont",
+                @"cant",
+                @"sike",
                 @"\:\(",
                 @"D\:",
                 @"\:c",
@@ -188,6 +209,7 @@ namespace RallyUp
                 @"pass",
                 @"decline",
                 @"regret",
+                @"forget",
                 @"💔",
                 @"😒",
                 @"😓",
@@ -310,7 +332,7 @@ namespace RallyUp
                 {
                     semantic++;
                 }
-                else if(sentenceSemantic < 0)
+                else if (sentenceSemantic < 0)
                 {
                     semantic--;
                 }
