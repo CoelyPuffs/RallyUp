@@ -4,16 +4,24 @@
              xmlns:local="clr-namespace:RallyUp"
              x:Class="RallyUp.MainPage">
 
-    <StackLayout xmlns:android="http://schemas.android.com/apk/res/android">
-        <!-- Place new controls here -->
-        <Label Text="Welcome to Xamarin.Forms!" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
-        <Button Text="Press to send"
-                x:Name="SendButton"
-                Clicked="OnButtonClicked"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"/>
-    </StackLayout>
+    <Grid xmlns:android="http://schemas.android.com/apk/res/android"
+                 BackgroundColor="#ffbd44">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.5*"/>
+        </Grid.RowDefinitions>
+        <Button Text="Start a New Rally"
+                BackgroundColor="#ffa600"
+                Grid.Row="0"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand"
+                Clicked="OnNewRallyButtonClicked"/>
+        <Button Text="My Rallies"
+                BackgroundColor="#ffa600"
+                Grid.Row="1"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand"
+                Clicked="OnMyRalliesButtonClicked"/>
+    </Grid>
 
 </ContentPage>

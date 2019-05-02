@@ -1,14 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.RallyUp.Android" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.RallyUp.Android" android:installLocation="internalOnly">
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="27" />
-	<uses-permission android:name="android.permission.READ_SMS" />
-	<uses-permission android:name="android.permission.READ_CONTACTS" />
-	<uses-permission android:name="android.permission.SEND_SMS" />
-  <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-	<application android:label="RallyUp.Android"></application>
-	<receiver android:name=".SMSListener">
-		<intent-filter>
-			<action android:name="Android.Provider.Telephony.SMS_RECEIVED" />
-		</intent-filter>
-	</receiver>
+  <uses-permission android:name="android.permission.SEND_SMS" />
+  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+  <uses-permission android:name="android.permission.READ_SMS" />
+  <uses-permission android:name="android.permission.READ_CONTACTS" />
+	<uses-permission android:name="android.permission.RECEIVE_SMS" />
+  <uses-permission android:name="android.permission.BROADCAST_SMS"/>
+	<application android:label="RallyUp.Android"
+               android:largeHeap="true"></application>
 </manifest>
